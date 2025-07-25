@@ -28,7 +28,7 @@ export default function Register() {
 
     const onSubmit = async (data) => {
         try {
-            await axios.post("/auth/register", {
+            await axios.post("http://localhost:3000/api/users/register", {
                 username: data.username,
                 email: data.email,
                 password: data.password

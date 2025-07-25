@@ -1,23 +1,25 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import authRouter from './routes/AuthRoute';
-import activityRouter from './routes/ActivityRoute';
-import { errorHandler } from './middlewares/Error';
-import './types/express'
+import dotenv from 'dotenv';
+import routes from './routes';
+
+dotenv.config();
 
 const app = express();
 
-// 中间件
+// Middleware
 app.use(cors());
-app.use(morgan('dev'));
 app.use(express.json());
+app.use(morgan('dev'));
 
-// 路由
-app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/activities', activityRouter);
+// Routes
+app.use('/api', routes);
 
-// 错误处理
-app.use(errorHandler);
+// Error handling
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
+});
 
 export default app;
