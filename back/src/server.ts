@@ -1,16 +1,17 @@
 import app from './app';
-import connectDB from './config/config';
-import env from './config/env';
+import pool from './config/database';
 
-const startServer = async () => {
-    await connectDB();
+const PORT = process.env.PORT || 3000;
 
-    app.listen(env.PORT, () => {
-        console.log(`Server running on port ${env.PORT}`);
+// Test database connection
+pool.query('SELECT 1')
+    .then(() => {
+        console.log('Database connected');
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('Database connection failed', err);
+        process.exit(1);
     });
-};
-
-startServer().catch(err => {
-    console.error('Server startup error:', err);
-    process.exit(1);
-});

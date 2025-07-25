@@ -1,26 +1,36 @@
-//用户模型
+import pool from '../config/database';
 
-import { model, Schema, Document } from 'mongoose';
-import bcrypt from 'bcryptjs';
-import { IUser } from '../interfaces/IUser';
+interface User {
+    id: number;
+    username: string;
+    email: string;
+    password: string;
+    created_at: Date;
+}
 
-const userSchema = new Schema<IUser>({
-    username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true, select: false },
-    registeredActivities: [{ type: Schema.Types.ObjectId, ref: 'Activity' }]
-}, { timestamps: true });
+class UserModel {
+    static async create(user: Omit<User, 'id' | 'created_at'>): Promise<User> {
+        const [result] = await pool.query(
+            'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+            [user.username, user.email, user.password]
+        );
 
-userSchema.pre<IUser>('save', async function(next) {
-    if (!this.isModified('password')) return next();
-    this.password = await bcrypt.hash(this.password, 12);
-    next();
-});
+        const insertedUser = await this.findById((result as any).insertId);
+        if (!insertedUser) {
+            throw new Error('Failed to create user');
+        }
+        return insertedUser;
+    }
 
-userSchema.methods.comparePassword = async function(
-    candidatePassword: string
-): Promise<boolean> {
-    return await bcrypt.compare(candidatePassword, this.password);
-};
+    static async findByEmail(email: string): Promise<User | null> {
+        const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+        return (rows as User[])[0] || null;
+    }
 
-export default model<IUser>('User', userSchema);
+    static async findById(id: number): Promise<User | null> {
+        const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
+        return (rows as User[])[0] || null;
+    }
+}
+
+export default UserModel;

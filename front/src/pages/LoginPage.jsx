@@ -5,9 +5,9 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// 表单验证规则
+// 表单验证规则 - 修改为使用email字段
 const loginSchema = z.object({
-    username: z.string().min(3, "用户名至少3个字符"),
+    email: z.string().email("请输入有效邮箱").min(3, "邮箱至少3个字符"),
     password: z.string().min(6, "密码至少6个字符")
 });
 
@@ -27,11 +27,16 @@ export default function LoginPage() {
     const onSubmit = async (data) => {
         try {
             setLoading(true);
-            const response = await axios.post("/api/login", data);
+            console.log(data)
+            const response = await axios.post("http://localhost:3000/api/users/login", {
+                email: data.email,
+                password: data.password
+            });
             localStorage.setItem("token", response.data.token);
-            navigate("/activities"); // 跳转到活动列表页
+            navigate("/activities");
         } catch (err) {
             setError(err.response?.data?.message || "登录失败");
+            console.log(err)
         } finally {
             setLoading(false);
         }
@@ -45,14 +50,14 @@ export default function LoginPage() {
                 {error && <div className="error-message">{error}</div>}
 
                 <div className="form-group">
-                    <label>用户名</label>
+                    <label>邮箱</label>
                     <input
-                        type="text"
-                        {...register("username")}
-                        placeholder="请输入用户名"
+                        type="email"  // 改为email类型
+                        {...register("email")}
+                        placeholder="请输入邮箱"
                     />
-                    {errors.username && (
-                        <span className="error">{errors.username.message}</span>
+                    {errors.email && (  // 改为errors.email
+                        <span className="error">{errors.email.message}</span>
                     )}
                 </div>
 
