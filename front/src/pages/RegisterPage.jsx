@@ -79,6 +79,7 @@ export default function Register() {
 
             // 设置表单中的image字段值
             setValue("avatar", response.url);
+            console.log(response);
             toast.success("头像上传成功");
             return response.url;
         } catch (error) {
