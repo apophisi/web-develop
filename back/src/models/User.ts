@@ -6,13 +6,14 @@ interface User {
     email: string;
     password: string;
     created_at: Date;
+    avatar: string;
 }
 
 class UserModel {
     static async create(user: Omit<User, 'id' | 'created_at'>): Promise<User> {
         const [result] = await pool.query(
-            'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-            [user.username, user.email, user.password]
+            'INSERT INTO users (username, email, password, image_url) VALUES (?, ?, ?, ?)',
+            [user.username, user.email, user.password, user.avatar]
         );
 
         const insertedUser = await this.findById((result as any).insertId);

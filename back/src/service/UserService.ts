@@ -7,14 +7,15 @@ dotenv.config();
 
 
 class UserService {
-    static async register(username: string, email: string, password: string) {
+    static async register(username: string, email: string, password: string, avatar:string) {
         const existingUser = await UserModel.findByEmail(email);
         if (existingUser) {
             throw new Error('Email already in use');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        return UserModel.create({ username, email, password: hashedPassword });
+        console.log(avatar);
+        return UserModel.create({ username, email, password: hashedPassword, avatar});
     }
 
     static async login(email: string, password: string) {

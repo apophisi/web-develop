@@ -4,8 +4,9 @@ import UserService from '../service/UserService';
 class UserController {
     static async register(req: Request, res: Response) {
         try {
-            const { username, email, password } = req.body;
-            const user = await UserService.register(username, email, password);
+            console.log(req);
+            const { username, email, password, avatar} = req.body;
+            const user = await UserService.register(username, email, password, avatar);
             res.status(201).json(user);
         } catch (error: any) {
             res.status(400).json({ error: error.message });
