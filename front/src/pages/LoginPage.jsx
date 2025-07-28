@@ -27,13 +27,16 @@ export default function LoginPage() {
     const onSubmit = async (data) => {
         try {
             setLoading(true);
-            console.log(data)
             const response = await axios.post("http://localhost:3000/api/users/login", {
                 email: data.email,
                 password: data.password
             });
+            console.log(response);
             localStorage.setItem("token", response.data.token);
+            console.log("Token已存储:", localStorage.getItem("token"));
+            window.location.reload();
             navigate("/activities");
+            console.log("跳转指令已执行");
         } catch (err) {
             setError(err.response?.data?.message || "登录失败");
             console.log(err)

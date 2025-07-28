@@ -22,6 +22,26 @@ class UserController {
             res.status(401).json({ error: error.message });
         }
     }
+
+    static async verify(req: Request, res: Response) {
+        try {
+            const authHeader = req.headers.authorization;
+            if (!authHeader?.startsWith('Bearer ')) {
+                return res.status(401).json({ valid: false, error: '未提供认证令牌' });
+            }
+
+            const result = await UserService.verifyToken(authHeader.split(' ')[1]);
+
+            if (!result.valid) {
+                return res.status(401).json(result);
+            }
+
+            res.json(result);
+        } catch (error) {
+            res.status(500).json({ valid: false, error: '服务器错误' });
+        }
+    }
+
 }
 
 export default UserController;

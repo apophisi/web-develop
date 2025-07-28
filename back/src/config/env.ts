@@ -1,7 +1,8 @@
 import path from 'path';
 import dotenv from 'dotenv';
 
-const result = dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+// const result = dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 interface EnvVars {
     // MySQL 数据库配置
@@ -50,15 +51,19 @@ const validateEnv = (): EnvVars => {
         DB_POOL_MAX: parseInt(process.env.DB_POOL_MAX || '10', 10),
 
         // 认证配置
-        JWT_SECRET: process.env.JWT_SECRET || 'default-dev-secret-32-chars-long-123',
+        JWT_SECRET: process.env.JWT_SECRET!,
         JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
 
         // 服务配置
         PORT: parseInt(process.env.PORT || '3000', 10),
         NODE_ENV: (process.env.NODE_ENV as EnvVars['NODE_ENV']) || 'development'
     };
+
 };
 
 // 执行验证并导出环境变量
 const env = validateEnv();
+
+console.log('JWT_SECRET:', env.JWT_SECRET);
+
 export default env;
